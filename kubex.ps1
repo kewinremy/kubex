@@ -23,14 +23,17 @@ function GetSetKubernetesContext() {
 function GetSetKubernetesNamespace() {
 	[Alias('kn')]
 	param(
+		[Parameter(Mandatory=$false)][switch]$all,
 		[Parameter(Mandatory=$false)][switch]$set,
 		[Parameter(Mandatory=$false)][string]$namespace
 	)
 	process {
-		if ($set) {
-			kubectl config set-context --current --namespace=$namespace
-		} else {
+		if ($all) {
 			kubectl get namespaces
+		} elseif($set) {
+			kubectl config set-context --current --namespace=$namespace
+		} else{
+			kubectl config view --minify --output 'jsonpath={..namespace}'
 		}
 	}
 }
